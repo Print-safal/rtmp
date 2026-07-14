@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "corsheaders",
+    "accounts",
+    "conversations",
+    "messaging",
 ]
 
 MIDDLEWARE = [
@@ -128,3 +131,4 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
 ]
+AUTH_USER_MODEL="accounts.User"
