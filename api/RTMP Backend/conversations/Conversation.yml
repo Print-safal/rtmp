@@ -1,0 +1,27 @@
+info:
+  name: Conversation
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{BASE_URL}}/api/conversations/"
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+  body:
+    type: json
+    data: |-
+      {
+          "conversation_type": "GROUP",
+          "name": "RTMP Project",
+          "description": "Backend Development",
+          "participant_ids": [2]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

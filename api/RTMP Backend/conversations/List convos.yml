@@ -1,0 +1,18 @@
+info:
+  name: List convos
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/conversations/"
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
