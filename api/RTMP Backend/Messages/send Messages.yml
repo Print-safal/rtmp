@@ -6,6 +6,16 @@ info:
 http:
   method: POST
   url: "{{BASE_URL}}/api/messages/"
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+  body:
+    type: json
+    data: |-
+      {
+          "conversation": 1,
+          "content": "Hello from Bruno!"
+      }
   auth: inherit
 
 settings:

@@ -1,0 +1,1 @@
+from messaging.routing import websocket_urlpatterns

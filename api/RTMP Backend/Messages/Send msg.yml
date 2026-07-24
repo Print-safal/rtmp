@@ -1,0 +1,11 @@
+info:
+  name: Send msg
+  type: websocket
+  seq: 3
+
+websocket:
+  url: ws://127.0.0.1:8000/ws/chat/1/
+  message:
+    type: json
+    data: "{}"
+  auth: inherit

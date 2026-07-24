@@ -1,18 +1,14 @@
 info:
-  name: LIST MSG
+  name: sasss
   type: http
-  seq: 2
+  seq: 9
 
 http:
-  method: GET
-  url: "{{BASE_URL}}/api/messages/?conversation=1"
+  method: POST
+  url: "{{BASE_URL}}/api/conversations/1/mark-read/"
   headers:
     - name: Authorization
       value: Bearer {{ACCESS_TOKEN}}
-  params:
-    - name: conversation
-      value: "1"
-      type: query
   auth: inherit
 
 settings:
