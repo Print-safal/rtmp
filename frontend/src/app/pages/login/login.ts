@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -11,34 +11,30 @@ import { AuthService } from '../../services/auth';
   styleUrl: './login.scss',
 })
 export class Login {
-
   private authService = inject(AuthService);
-
+  private router = inject(Router);
   username = '';
   password = '';
 
   login() {
+    this.authService
+      .login({
+        username: this.username,
+        password: this.password,
+      })
+      .subscribe({
+        next: (response) => {
+          localStorage.setItem('access', response.access);
+          localStorage.setItem('refresh', response.refresh);
 
-    this.authService.login({
-      username: this.username,
-      password: this.password
-    }).subscribe({
+          console.log('Login successful');
 
-      next: (response) => {
+          this.router.navigate(['/chats']);
+        },
 
-        console.log('Login successful');
-        console.log(response);
-
-      },
-
-      error: (err) => {
-
-        console.error(err);
-
-      }
-
-    });
-
+        error: (err) => {
+          console.error(err);
+        },
+      });
   }
-
 }
