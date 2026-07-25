@@ -4,8 +4,12 @@ info:
   seq: 3
 
 websocket:
-  url: ws://127.0.0.1:8000/ws/chat/1/
+  url: ws://127.0.0.1:8000/ws/chat/1/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg0OTA2OTE2LCJpYXQiOjE3ODQ5MDYwMTYsImp0aSI6IjAxOTMzMDUwM2IyYjQyZTI5M2VmMzI1Yjc5ODY2MjFiIiwidXNlcl9pZCI6IjMifQ.Uk1PZkJ5bAaQGjsTNhszXAVXCfkmRePnP5SFLTeJxbQ
   message:
-    type: json
-    data: "{}"
+    type: text
+    data: '{"message":"helllo"}'
   auth: inherit
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0
