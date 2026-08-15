@@ -1,1 +1,54 @@
-<p>profile works!</p>
+<div class="profile-container">
+
+  <h2>My Profile</h2>
+
+  @if (loading) {
+
+    <p>Loading profile...</p>
+
+  } @else if (user) {
+
+    <div class="profile-card">
+
+      <div class="profile-avatar">
+        {{ user.display_name.charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="profile-info">
+
+        <div class="profile-field">
+          <span class="label">Display Name</span>
+          <span>{{ user.display_name }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span class="label">Username</span>
+          <span>{{ user.username }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span class="label">Email</span>
+          <span>{{ user.email }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span class="label">Bio</span>
+          <span>{{ user.bio || 'No bio added.' }}</span>
+        </div>
+
+        <div class="profile-field">
+          <span class="label">Joined</span>
+          <span>{{ user.date_joined | date:'mediumDate' }}</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  } @else {
+
+    <p>Unable to load profile.</p>
+
+  }
+
+</div>

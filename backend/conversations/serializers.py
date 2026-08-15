@@ -64,18 +64,48 @@ class CreateConversationSerializer(serializers.ModelSerializer):
         participant_ids = validated_data.pop("participant_ids")
 
         request = self.context["request"]
+        current_user = request.user
 
+        # For private conversations, reuse an existing conversation
+        if validated_data.get("conversation_type") == "PRIVATE":
+
+            other_user_ids = set(participant_ids)
+            other_user_ids.discard(current_user.id)
+
+            if len(other_user_ids) == 1:
+
+                other_user_id = next(iter(other_user_ids))
+
+                existing_conversation = (
+                    Conversation.objects
+                    .filter(
+                        conversation_type="PRIVATE",
+                        participants=current_user,
+                    )
+                    .filter(
+                        participants__id=other_user_id,
+                    )
+                    .distinct()
+                    .first()
+                )
+
+                if existing_conversation:
+                    return existing_conversation
+
+        # Create a new conversation
         conversation = Conversation.objects.create(
-            created_by=request.user,
+            created_by=current_user,
             **validated_data,
         )
 
+        # Add creator
         ConversationParticipant.objects.create(
             conversation=conversation,
-            user=request.user,
+            user=current_user,
             role=ConversationParticipant.Role.OWNER,
         )
 
+        # Add other participants
         from accounts.models import User
 
         participants = User.objects.filter(
@@ -84,7 +114,7 @@ class CreateConversationSerializer(serializers.ModelSerializer):
 
         for user in participants:
 
-            if user == request.user:
+            if user == current_user:
                 continue
 
             ConversationParticipant.objects.create(

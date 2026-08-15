@@ -2,8 +2,8 @@ import json
 from messaging.serializers import MessageSerializer
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from channels.db import database_sync_to_async
 from conversations.models import Conversation
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -14,22 +14,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
             id=conversation_id,
             participants__id=user_id,
         ).exists()
-    
+
     async def connect(self):
+
         if self.scope["user"].is_anonymous:
             await self.close(code=4001)
             return
+
+        self.conversation_id = self.scope["url_route"]["kwargs"]["conversation_id"]
+
         print(self.scope["user"])
+        print(f"Connecting to conversation: {self.conversation_id}")
+
         is_member = await self.is_conversation_member(
-        self.scope["user"].id,
-        self.conversation_id,
-)
+            self.scope["user"].id,
+            self.conversation_id,
+        )
 
         if not is_member:
             print("Unauthorized conversation access.")
             await self.close(code=4003)
             return
-        self.conversation_id = self.scope["url_route"]["kwargs"]["conversation_id"]
 
         self.room_group_name = f"chat_{self.conversation_id}"
 
@@ -81,13 +86,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message": serialized,
             }
         )
-    
+
     async def chat_message(self, event):
 
         message = event["message"]
 
         await self.send(text_data=json.dumps(event["message"])
-)
+                        )
 
     @database_sync_to_async
     def save_message(self, user_id, conversation_id, content):
@@ -107,6 +112,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
         return message
+
     @database_sync_to_async
     def serialize_message(self, message):
 

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { User } from '../models/user';
 import { environment } from '../../environments/environment';
 
 import { LoginRequest, RegisterRequest, TokenResponse } from '../models/auth';
@@ -20,7 +20,7 @@ export class AuthService {
     return this.http.post<TokenResponse>(`${environment.authUrl}/login/`, data);
   }
 
-  register(data: RegisterRequest) {
+  register(data: { username: string; email: string; password: string; display_name: string }) {
     return this.http.post(`${environment.authUrl}/register/`, data);
   }
 
@@ -28,8 +28,8 @@ export class AuthService {
     return this.http.post<TokenResponse>(`${environment.authUrl}/refresh/`, { refresh });
   }
 
-  me() {
-    return this.http.get(`${environment.authUrl}/me/`);
+  me(): Observable<User>{
+    return this.http.get<User>(`${environment.authUrl}/me/`);
   }
   isLoggedIn(): boolean {
     const token = localStorage.getItem('access');
@@ -46,8 +46,10 @@ export class AuthService {
       return false;
     }
   }
-  logout() {
-    localStorage.clear();
+  logout(): void {
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    localStorage.removeItem('user');
   }
 }
 export class Auth {}

@@ -1,1 +1,25 @@
-<p>navbar works!</p>
+<nav class="navbar navbar-dark bg-dark px-3">
+
+  <span class="navbar-brand">
+    RTMP
+  </span>
+
+  <div class="d-flex align-items-center gap-3">
+
+    <a
+      routerLink="/profile"
+      class="nav-link text-white"
+    >
+      Profile
+    </a>
+
+    <button
+      class="btn btn-outline-light"
+      (click)="logout()"
+    >
+      Logout
+    </button>
+
+  </div>
+
+</nav>

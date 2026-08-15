@@ -1,23 +1,33 @@
-import {
-  HttpInterceptorFn
-} from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
-  const token = localStorage.getItem('access');
+  // These endpoints do not require authentication
+  const publicUrls = [
+    '/api/auth/login/',
+    '/api/auth/register/',
+    '/api/auth/refresh/'
+  ];
 
-  if (!token) {
+  const isPublic = publicUrls.some(url =>
+    req.url.includes(url)
+  );
+
+  if (isPublic) {
     return next(req);
   }
 
-  const cloned = req.clone({
+  const token = localStorage.getItem('access');
 
-    setHeaders: {
-      Authorization: `Bearer ${token}`
-    }
+  if (token) {
 
-  });
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-  return next(cloned);
+  }
 
+  return next(req);
 };

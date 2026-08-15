@@ -44,3 +44,12 @@ class ChangePasswordView(APIView):
             {"detail": "Password updated successfully."},
             status=status.HTTP_200_OK,
         )
+class UserListView(generics.ListAPIView):
+
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.exclude(
+            id=self.request.user.id
+        ).order_by("username")
