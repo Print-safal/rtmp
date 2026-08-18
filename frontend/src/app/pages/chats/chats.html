@@ -1,14 +1,52 @@
 <app-navbar></app-navbar>
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-3 border-end">
-      <app-sidebar (conversationSelected)="loadConversation($event)"> </app-sidebar>
-    </div>
+<div class="chat-page">
 
-    <div class="col-9">
-      <app-chat-window [messages]="messages" [conversationId]="selectedConversation?.id">
-      </app-chat-window>
-    </div>
-  </div>
+  <!-- Sidebar -->
+  <aside class="chat-sidebar">
+
+    <app-sidebar
+      (conversationSelected)="loadConversation($event)"
+    ></app-sidebar>
+
+  </aside>
+
+
+  <!-- Main chat area -->
+  <main class="chat-main">
+
+    @if (selectedConversation) {
+
+      <app-chat-window
+        [messages]="messages"
+        [conversationId]="selectedConversation.id"
+        [conversation]="selectedConversation"
+        [connectionStatus]="connectionStatus"
+      ></app-chat-window>
+
+    } @else {
+
+      <div class="empty-chat">
+
+        <div class="empty-icon">
+          💬
+        </div>
+
+        <h2>Welcome to RTMP</h2>
+
+        <p>
+          Select a conversation from the sidebar
+          to start messaging.
+        </p>
+
+        <p class="empty-hint">
+          Or click <strong>+ New Chat</strong> to start a new conversation.
+        </p>
+
+      </div>
+
+    }
+
+  </main>
+
 </div>

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { Subject,Observable } from 'rxjs';
 import { Message, PaginatedMessages } from '../models/message';
 import { environment } from '../../environments/environment';
 
@@ -13,6 +13,12 @@ import { Conversation } from '../models/conversation';
 export class ChatService {
   private http = inject(HttpClient);
   private socket?: WebSocket;
+  private incomingMessages = new Subject<Message>();
+
+messages$ = this.incomingMessages.asObservable();
+  markConversationRead(conversationId: number) {
+    return this.http.post(`${environment.apiUrl}/conversations/${conversationId}/mark-read/`, {});
+  }
 
   connectWebSocket(conversationId: number): WebSocket {
     const token = localStorage.getItem('access');
@@ -68,4 +74,7 @@ export class ChatService {
   }) {
     return this.http.post<Conversation>(`${environment.apiUrl}/conversations/`, data);
   }
+  emitMessage(message: Message): void {
+  this.incomingMessages.next(message);
+}
 }

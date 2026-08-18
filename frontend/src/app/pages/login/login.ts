@@ -15,8 +15,11 @@ export class Login {
   private router = inject(Router);
   username = '';
   password = '';
+  errorMessage = '';
 
-  login() {
+  login(): void {
+    this.errorMessage = '';
+
     this.authService
       .login({
         username: this.username,
@@ -34,6 +37,7 @@ export class Login {
 
         error: (err) => {
           console.error(err);
+          this.errorMessage = 'Unable to sign in. Please check your username and password.';
         },
       });
   }

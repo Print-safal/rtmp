@@ -1,75 +1,142 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth';
+import { Component, inject, OnDestroy } from '@angular/core';
+
 import { Navbar } from '../../components/navbar/navbar';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { ChatWindow } from '../../components/chat-window/chat-window';
+import { ConnectionStatus } from '../../components/chat-window/chat-window';
+
 import { Conversation } from '../../models/conversation';
 import { ChatService } from '../../services/chat';
 import { Message } from '../../models/message';
+
 @Component({
   selector: 'app-chats',
   imports: [Navbar, Sidebar, ChatWindow],
   templateUrl: './chats.html',
   styleUrl: './chats.scss',
 })
-export class Chats implements OnInit,OnDestroy{
+export class Chats implements OnDestroy {
+
   private chat = inject(ChatService);
 
   selectedConversation?: Conversation;
 
   messages: Message[] = [];
-  private auth = inject(AuthService);
+  connectionStatus: ConnectionStatus = 'disconnected';
+  private activeSocket?: WebSocket;
 
-  ngOnInit(): void {
-    this.auth.me().subscribe({
-      next: (user) => {
-        console.log('Current user:', user);
-      },
 
-      error: (err) => {
-        console.error(err);
-      },
-    });
-  }
-  loadConversation(conversation: Conversation) {
+  loadConversation(conversation: Conversation): void {
+
     this.chat.disconnectWebSocket();
+
+    this.connectionStatus = 'connecting';
+
     this.selectedConversation = conversation;
 
-    this.chat.getMessages(conversation.id).subscribe({
-      next: (response) => {
-        this.messages = response.results;
 
-        console.log('Messages:', this.messages);
+    // Mark conversation as read
+    this.chat.markConversationRead(conversation.id).subscribe({
+
+      error: (error) => {
+        console.error(
+          'Failed to mark conversation as read:',
+          error
+        );
       },
 
-      error: console.error,
     });
 
-    const socket = this.chat.connectWebSocket(conversation.id);
+
+    // Load existing messages
+    this.chat.getMessages(conversation.id).subscribe({
+
+      next: (response) => {
+        this.messages = response.results;
+      },
+
+      error: (error) => {
+        console.error(
+          'Failed to load messages:',
+          error
+        );
+      },
+
+    });
+
+
+    // Connect to WebSocket
+    const socket = this.chat.connectWebSocket(
+      conversation.id
+    );
+    this.activeSocket = socket;
+
 
     socket.onopen = () => {
-      console.log(`WebSocket connected to conversation ${conversation.id}`);
+
+      if (this.activeSocket === socket) {
+        this.connectionStatus = 'connected';
+      }
+
+      console.log(
+        `WebSocket connected to conversation ${conversation.id}`
+      );
+
     };
+
 
     socket.onmessage = (event) => {
+
       const message = JSON.parse(event.data);
 
-      console.log('WebSocket message:', message);
-
       if (message.id) {
+
         this.messages.push(message);
+
+        this.chat.emitMessage(message);
+
       }
+
     };
+
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+
+      if (this.activeSocket === socket) {
+        this.connectionStatus = 'disconnected';
+      }
+
+      console.error(
+        'WebSocket error:',
+        error
+      );
+
     };
 
+
     socket.onclose = (event) => {
-      console.log('WebSocket closed:', event.code);
+
+      if (this.activeSocket === socket) {
+        this.connectionStatus = 'disconnected';
+        this.activeSocket = undefined;
+      }
+
+      console.log(
+        'WebSocket closed:',
+        event.code
+      );
+
     };
+
   }
+
+
   ngOnDestroy(): void {
-  this.chat.disconnectWebSocket();
-}
+
+    this.chat.disconnectWebSocket();
+    this.activeSocket = undefined;
+    this.connectionStatus = 'disconnected';
+
+  }
+
 }

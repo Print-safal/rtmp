@@ -1,57 +1,77 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
+<section class="sidebar" aria-label="Chats">
+  <header class="sidebar-header">
+    <h2>Chats</h2>
 
-  <h5 class="mb-0">Chats</h5>
+    <button type="button" class="btn btn-primary new-chat-button" (click)="openNewChat()">
+      <span class="new-chat-icon" aria-hidden="true">+</span>
+      New Chat
+    </button>
+  </header>
 
-  <button
-    class="btn btn-primary btn-sm"
-    (click)="openNewChat()"
-  >
-    + New Chat
-  </button>
-
-</div>
-@if (showNewChat) {
-
-  <div class="card mt-3">
-
-    <div class="card-body">
-
-      <h6>Start New Chat</h6>
-
-      @for (user of users; track user.id) {
+  @if (showNewChat) {
+    <section class="new-chat-panel" aria-label="Start a new chat">
+      <div class="new-chat-panel-header">
+        <div>
+          <h3>Start a new chat</h3>
+          <p>Choose someone to message.</p>
+        </div>
 
         <button
-          class="list-group-item list-group-item-action"
-          (click)="createChat(user)"
+          type="button"
+          class="close-panel-button"
+          aria-label="Close new chat panel"
+          (click)="closeNewChat()"
         >
-          {{ user.display_name || user.username }}
+          &times;
         </button>
+      </div>
 
-      }
-
-      <button
-        class="btn btn-secondary btn-sm mt-3"
-        (click)="closeNewChat()"
-      >
-        Cancel
-      </button>
-
-    </div>
-
-  </div>
-
-}
-<div class="list-group">
-  
-  @for (conversation of conversations; track conversation.id) {
-
-    <button
-      class="list-group-item list-group-item-action"
-       (click)="selectConversation(conversation)"
-    >
-      {{ getConversationName(conversation)  }}
-    </button>
-
+      <div class="user-list">
+        @for (user of users; track user.id) {
+          <button type="button" class="user-option" (click)="createChat(user)">
+            <span class="user-avatar" aria-hidden="true">
+              {{ (user.display_name || user.username).charAt(0).toUpperCase() }}
+            </span>
+            <span class="user-name">{{ user.display_name || user.username }}</span>
+          </button>
+        } @empty {
+          <p class="panel-empty-state">No users are available to start a chat.</p>
+        }
+      </div>
+    </section>
   }
 
-</div>
+  <div class="conversation-list">
+    @for (conversation of conversations; track conversation.id) {
+      <button
+        type="button"
+        class="conversation-item"
+        [class.active]="selectedConversationId === conversation.id"
+        (click)="selectConversation(conversation)"
+      >
+        <span class="conversation-avatar" aria-hidden="true">
+          {{ getConversationName(conversation).charAt(0).toUpperCase() }}
+        </span>
+
+        <span class="conversation-details">
+          <span class="conversation-name">{{ getConversationName(conversation) }}</span>
+          @if (conversation.conversation_type === 'PRIVATE') {
+            <span class="conversation-type">Private conversation</span>
+          } @else {
+            <span class="conversation-type">Group conversation</span>
+          }
+        </span>
+
+        @if (conversation.unread) {
+          <span class="unread-badge">New</span>
+        }
+      </button>
+    } @empty {
+      <div class="empty-conversations">
+        <span class="empty-conversations-icon" aria-hidden="true">&#9993;</span>
+        <h3>No chats yet</h3>
+        <p>Start a new chat to begin messaging.</p>
+      </div>
+    }
+  </div>
+</section>

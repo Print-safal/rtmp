@@ -28,7 +28,7 @@ export class AuthService {
     return this.http.post<TokenResponse>(`${environment.authUrl}/refresh/`, { refresh });
   }
 
-  me(): Observable<User>{
+  me(): Observable<User> {
     return this.http.get<User>(`${environment.authUrl}/me/`);
   }
   isLoggedIn(): boolean {
@@ -50,6 +50,9 @@ export class AuthService {
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
     localStorage.removeItem('user');
+  }
+  updateProfile(data: { display_name?: string; bio?: string }) {
+    return this.http.patch<User>(`${environment.authUrl}/me/`, data);
   }
 }
 export class Auth {}

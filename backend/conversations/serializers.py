@@ -20,7 +20,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
 
     participant_count = serializers.SerializerMethodField()
-
+    unread = serializers.SerializerMethodField()
     participants = ParticipantSerializer(
         source="conversation_participants",
         many=True,
@@ -38,10 +38,31 @@ class ConversationSerializer(serializers.ModelSerializer):
             "participants",
             "created_at",
             "updated_at",
+            "unread",
         )
 
     def get_participant_count(self, obj):
         return obj.participants.count()
+    def get_unread(self, obj):
+
+        request = self.context.get("request")
+
+        if not request or not request.user.is_authenticated:
+            return False
+
+        try:
+            membership = obj.conversation_participants.get(
+                user=request.user
+            )
+        except ConversationParticipant.DoesNotExist:
+            return False
+
+        if membership.last_read_message is None:
+            return obj.messages.exists()
+
+        return obj.messages.filter(
+            created_at__gt=membership.last_read_message.created_at
+        ).exists()
 
 
 class CreateConversationSerializer(serializers.ModelSerializer):

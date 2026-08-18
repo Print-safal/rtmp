@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -16,10 +17,13 @@ class UserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             "id",
+            "username",
+            "email",
             "last_seen",
             "date_joined",
         )
-    
+
+
 class RegisterSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(
@@ -47,6 +51,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
 class ChangePasswordSerializer(serializers.Serializer):
 
     old_password = serializers.CharField(write_only=True)

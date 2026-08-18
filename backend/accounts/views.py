@@ -1,10 +1,9 @@
-from rest_framework import generics, permissions,status
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import RegisterSerializer, UserSerializer,ChangePasswordSerializer
-
+from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -15,11 +14,30 @@ class RegisterView(generics.CreateAPIView):
 
 
 class MeView(APIView):
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+
         serializer = UserSerializer(request.user)
+
         return Response(serializer.data)
+
+    def patch(self, request):
+
+        serializer = UserSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response(serializer.data)
+
+
 class ChangePasswordView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -44,6 +62,8 @@ class ChangePasswordView(APIView):
             {"detail": "Password updated successfully."},
             status=status.HTTP_200_OK,
         )
+
+
 class UserListView(generics.ListAPIView):
 
     serializer_class = UserSerializer

@@ -1,81 +1,40 @@
-<div class="register-container">
-
-  <h1>Register</h1>
-
-  @if (errorMessage) {
-    <div class="alert alert-danger">
-      {{ errorMessage }}
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="register-heading">
+    <div class="auth-brand">
+      <div class="auth-logo" aria-hidden="true">R</div>
+      <span>RTMP</span>
     </div>
-  }
 
-  @if (successMessage) {
-    <div class="alert alert-success">
-      {{ successMessage }}
+    <div class="auth-heading">
+      <p>Get started</p>
+      <h1 id="register-heading">Create your account</h1>
+      <span>Join RTMP and start the conversation.</span>
     </div>
-  }
 
-  <div class="mb-3">
-    <label class="form-label">Username</label>
+    @if (errorMessage) { <div class="auth-alert auth-alert-error" role="alert">{{ errorMessage }}</div> }
+    @if (successMessage) { <div class="auth-alert auth-alert-success" role="status">{{ successMessage }}</div> }
 
-    <input
-      class="form-control"
-      type="text"
-      [(ngModel)]="username"
-      placeholder="Enter username"
-    >
-  </div>
+    <form class="auth-form" (ngSubmit)="register()">
+      <div class="auth-field">
+        <label for="register-username">Username</label>
+        <input id="register-username" class="form-control" type="text" name="username" [(ngModel)]="username" placeholder="Choose a username" autocomplete="username">
+      </div>
+      <div class="auth-field">
+        <label for="register-email">Email</label>
+        <input id="register-email" class="form-control" type="email" name="email" [(ngModel)]="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label for="register-display-name">Display name</label>
+        <input id="register-display-name" class="form-control" type="text" name="displayName" [(ngModel)]="displayName" placeholder="How people will see you" autocomplete="name">
+      </div>
+      <div class="auth-field">
+        <label for="register-password">Password</label>
+        <input id="register-password" class="form-control" type="password" name="password" [(ngModel)]="password" placeholder="Minimum 8 characters" autocomplete="new-password">
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Email</label>
+      <button type="submit" class="btn auth-submit">Register</button>
+    </form>
 
-    <input
-      class="form-control"
-      type="email"
-      [(ngModel)]="email"
-      placeholder="Enter email"
-    >
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">Display Name</label>
-
-    <input
-      class="form-control"
-      type="text"
-      [(ngModel)]="displayName"
-      placeholder="Enter display name"
-    >
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">Password</label>
-
-    <input
-      class="form-control"
-      type="password"
-      [(ngModel)]="password"
-      placeholder="Minimum 8 characters"
-    >
-  </div>
-
-  <button
-    class="btn btn-primary w-100"
-    (click)="register()"
-  >
-    Register
-  </button>
-
-  <div class="text-center mt-3">
-
-    <span>Already have an account?</span>
-
-    <a
-      routerLink="/login"
-      class="ms-1"
-    >
-      Login
-    </a>
-
-  </div>
-
-</div>
+    <p class="auth-switch">Already have an account? <a routerLink="/login">Login</a></p>
+  </section>
+</main>

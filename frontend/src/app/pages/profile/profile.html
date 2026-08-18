@@ -1,54 +1,122 @@
-<div class="profile-container">
-
-  <h2>My Profile</h2>
-
-  @if (loading) {
-
-    <p>Loading profile...</p>
-
-  } @else if (user) {
-
-    <div class="profile-card">
-
-      <div class="profile-avatar">
-        {{ user.display_name.charAt(0).toUpperCase() }}
+<app-navbar></app-navbar>
+<main class="profile-page">
+  <div class="profile-container">
+    @if (loading) {
+      <div class="profile-loading" role="status">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        Loading profile...
       </div>
+    } @else if (user) {
+      @if (errorMessage) {
+        <div class="profile-alert profile-alert-error" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
 
-      <div class="profile-info">
+      @if (successMessage) {
+        <div class="profile-alert profile-alert-success" role="status">
+          {{ successMessage }}
+        </div>
+      }
 
-        <div class="profile-field">
-          <span class="label">Display Name</span>
-          <span>{{ user.display_name }}</span>
+      <section class="profile-card" aria-labelledby="profile-title">
+        <div class="profile-card-header">
+          <div class="profile-avatar" aria-hidden="true">
+            {{ user.display_name.charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="profile-heading">
+            <p class="profile-eyebrow">Account settings</p>
+            <h1 id="profile-title">My Profile</h1>
+            <p>Manage your personal information.</p>
+          </div>
         </div>
 
-        <div class="profile-field">
-          <span class="label">Username</span>
-          <span>{{ user.username }}</span>
-        </div>
+        @if (!editing) {
+          <div class="profile-info">
+            <div class="profile-field profile-field-wide">
+              <span class="label">Display name</span>
+              <span class="field-value">{{ user.display_name }}</span>
+            </div>
 
-        <div class="profile-field">
-          <span class="label">Email</span>
-          <span>{{ user.email }}</span>
-        </div>
+            <div class="profile-field">
+              <span class="label">Username</span>
+              <span class="field-value">{{ user.username }}</span>
+            </div>
 
-        <div class="profile-field">
-          <span class="label">Bio</span>
-          <span>{{ user.bio || 'No bio added.' }}</span>
-        </div>
+            <div class="profile-field">
+              <span class="label">Email address</span>
+              <span class="field-value">{{ user.email }}</span>
+            </div>
 
-        <div class="profile-field">
-          <span class="label">Joined</span>
-          <span>{{ user.date_joined | date:'mediumDate' }}</span>
-        </div>
+            <div class="profile-field profile-field-wide">
+              <span class="label">Bio</span>
+              <span class="field-value bio-value">{{ user.bio || 'No bio added.' }}</span>
+            </div>
 
-      </div>
+            <div class="profile-field profile-field-wide">
+              <span class="label">Member since</span>
+              <span class="field-value">{{ user.date_joined | date:'mediumDate' }}</span>
+            </div>
+          </div>
 
-    </div>
+          <div class="profile-actions">
+            <button type="button" class="btn btn-primary profile-primary-button" (click)="startEditing()">
+              Edit Profile
+            </button>
+          </div>
+        } @else {
+          <div class="profile-form">
+            <div class="form-field profile-field-wide">
+              <label class="form-label" for="display-name">Display name</label>
+              <input id="display-name" type="text" class="form-control" [(ngModel)]="displayName">
+              <p class="field-hint">This is the name other people see in chats.</p>
+            </div>
 
-  } @else {
+            <div class="form-field">
+              <label class="form-label" for="username">Username</label>
+              <input id="username" type="text" class="form-control" [value]="user.username" disabled>
+              <p class="field-hint">Usernames cannot be changed.</p>
+            </div>
 
-    <p>Unable to load profile.</p>
+            <div class="form-field">
+              <label class="form-label" for="email">Email address</label>
+              <input id="email" type="email" class="form-control" [value]="user.email" disabled>
+            </div>
 
-  }
+            <div class="form-field profile-field-wide">
+              <label class="form-label" for="bio">Bio</label>
+              <textarea
+                id="bio"
+                class="form-control"
+                rows="4"
+                [(ngModel)]="bio"
+                placeholder="Tell us something about yourself..."
+              ></textarea>
+            </div>
+          </div>
 
-</div>
+          <div class="profile-actions">
+            <button
+              type="button"
+              class="btn btn-primary profile-primary-button"
+              (click)="saveProfile()"
+              [disabled]="saving"
+            >
+              {{ saving ? 'Saving...' : 'Save Changes' }}
+            </button>
+
+            <button
+              type="button"
+              class="btn profile-secondary-button"
+              (click)="cancelEditing()"
+              [disabled]="saving"
+            >
+              Cancel
+            </button>
+          </div>
+        }
+      </section>
+    }
+  </div>
+</main>

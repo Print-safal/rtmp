@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, output } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { Subscription } from 'rxjs';
 import { UserService } from '../../services/user';
 import { User } from '../../models/user';
 import { ChatService } from '../../services/chat';
@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
-export class Sidebar implements OnInit {
+export class Sidebar implements OnInit ,OnDestroy{
   private chat = inject(ChatService);
   private userService = inject(UserService);
   private authService = inject(AuthService);
@@ -27,7 +27,7 @@ export class Sidebar implements OnInit {
 
   showNewChat = false;
   selectedConversationId?: number;
-
+  private messageSubscription?: Subscription;
   ngOnInit(): void {
     // Get currently logged-in user
     this.authService.me().subscribe({
@@ -50,13 +50,34 @@ export class Sidebar implements OnInit {
 
       error: console.error,
     });
+    this.messageSubscription = this.chat.messages$.subscribe(
+  (message) => {
+
+    const conversation = this.conversations.find(
+      c => c.id === message.conversation
+    );
+
+    if (!conversation) {
+      return;
+    }
+
+    if (conversation.id !== this.selectedConversationId) {
+      conversation.unread = true;
+    }
+
+  }
+);
   }
 
   selectConversation(conversation: Conversation): void {
-    this.selectedConversationId = conversation.id;
 
-    this.conversationSelected.emit(conversation);
-  }
+  this.selectedConversationId = conversation.id;
+
+  conversation.unread = false;
+
+  this.conversationSelected.emit(conversation);
+
+}
 
   openNewChat(): void {
     this.showNewChat = true;
@@ -129,4 +150,9 @@ export class Sidebar implements OnInit {
       otherParticipant?.user.display_name || otherParticipant?.user.username || conversation.name
     );
   }
+  ngOnDestroy(): void {
+
+  this.messageSubscription?.unsubscribe();
+
+}
 }
