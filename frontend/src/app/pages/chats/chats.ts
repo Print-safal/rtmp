@@ -2,8 +2,7 @@ import { Component, inject, OnDestroy } from '@angular/core';
 
 import { Navbar } from '../../components/navbar/navbar';
 import { Sidebar } from '../../components/sidebar/sidebar';
-import { ChatWindow } from '../../components/chat-window/chat-window';
-import { ConnectionStatus } from '../../components/chat-window/chat-window';
+import { ChatWindow, ConnectionStatus } from '../../components/chat-window/chat-window';
 
 import { Conversation } from '../../models/conversation';
 import { ChatService } from '../../services/chat';
@@ -78,10 +77,6 @@ export class Chats implements OnDestroy {
         this.connectionStatus = 'connected';
       }
 
-      console.log(
-        `WebSocket connected to conversation ${conversation.id}`
-      );
-
     };
 
 
@@ -120,11 +115,6 @@ export class Chats implements OnDestroy {
         this.connectionStatus = 'disconnected';
         this.activeSocket = undefined;
       }
-
-      console.log(
-        'WebSocket closed:',
-        event.code
-      );
 
     };
 

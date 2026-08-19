@@ -47,6 +47,7 @@
         type="button"
         class="conversation-item"
         [class.active]="selectedConversationId === conversation.id"
+        [attr.aria-current]="selectedConversationId === conversation.id ? 'page' : null"
         (click)="selectConversation(conversation)"
       >
         <span class="conversation-avatar" aria-hidden="true">

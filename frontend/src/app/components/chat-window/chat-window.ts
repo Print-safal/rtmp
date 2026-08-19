@@ -1,5 +1,5 @@
 import { AfterViewChecked, Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { jwtDecode } from 'jwt-decode';
 
@@ -15,7 +15,7 @@ export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected';
 
 @Component({
   selector: 'app-chat-window',
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe],
   templateUrl: './chat-window.html',
   styleUrl: './chat-window.scss',
 })

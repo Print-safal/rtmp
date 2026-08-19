@@ -1,5 +1,4 @@
 import { Component, inject, OnDestroy, OnInit, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { UserService } from '../../services/user';
 import { User } from '../../models/user';
@@ -9,7 +8,6 @@ import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
@@ -32,7 +30,6 @@ export class Sidebar implements OnInit ,OnDestroy{
     // Get currently logged-in user
     this.authService.me().subscribe({
       next: (user) => {
-        console.log('Current user:', user);
         this.currentUser = user;
       },
 
@@ -44,7 +41,6 @@ export class Sidebar implements OnInit ,OnDestroy{
     // Get conversations
     this.chat.getConversations().subscribe({
       next: (response) => {
-        console.log('Conversations:', response);
         this.conversations = response;
       },
 
@@ -107,8 +103,6 @@ export class Sidebar implements OnInit ,OnDestroy{
       })
       .subscribe({
         next: (conversation) => {
-          console.log('Conversation created:', conversation);
-
           const alreadyExists = this.conversations.some(
             (existing) => existing.id === conversation.id,
           );
